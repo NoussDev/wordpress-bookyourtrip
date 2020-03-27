@@ -1,4 +1,4 @@
 *
-!wp-content
+!wp-content/
 !wp-config.php
 !.gitignore
