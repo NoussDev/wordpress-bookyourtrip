@@ -7,6 +7,10 @@ function bookingyourtrip_support(){
     add_theme_support('menus');
     register_nav_menu('header','En tête du menu');
     register_nav_menu('footer','Pied de page');
+
+    add_image_size("card-header", 350, 215, true); //on génère un format d'image
+    //remove_image_size("medium"); possiblité de supprimer les formats de wordpress
+    //add_image_size("medium", 500, 500) //pour les recréer
 }
 
 function bookingyourtrip_register_assets(){
@@ -37,6 +41,29 @@ function bookingyourtrip_menu_link($attrs){
     return $attrs;
 }
 
+//création d'une fonction de pagination personnalisé car on ne peut pas changer les classes nativement avec wordpress
+function bookingyourtrip_pagination(){
+    $pages = paginate_links(["type" => "array"]); //je récupère la liste des liens sous forme de tableau
+    if(empty($pages)){
+        return;
+    }
+    echo '<nav aria-label="Pagination" class="my-4">';
+        echo '<ul class="pagination">';
+    foreach($pages as $page){
+        $active = strpos($page, 'current'); //si il y a "current" alors je place active de bootstrap dans la classe
+        $class= "page-item";
+        if($active){
+            $class.=' active';
+        }
+            echo '<li class="' . $class . '">';
+                echo str_replace('page-numbers','page-link',$page); //je remplace la classe "page-numbers" native de wordpress par "page-link" de bootstrap
+            echo '</li>';
+    }
+        echo '</ul>';
+    echo '</nav>';
+}
+
+
 //mes actions
 add_action('after_setup_theme','bookingyourtrip_support'); //titre à la page
 add_action('wp_enqueue_scripts','bookingyourtrip_register_assets'); //génère mon css et js
@@ -44,5 +71,8 @@ add_filter("document_title_separator", "bookingyourtrip_title_separator"); //le 
 add_filter("nav_menu_css_class", "bookingyourtrip_menu_class"); //ajoute une class css à mon menu
 add_filter("nav_menu_link_attributes", "bookingyourtrip_menu_link"); //ajoute une class css au lien du menu
 
+
+require_once ("metaboxes/sponso.php");
+SponsoMetaBox::register();
 
 
