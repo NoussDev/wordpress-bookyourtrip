@@ -105,6 +105,9 @@ add_filter("nav_menu_link_attributes", "bookingyourtrip_menu_link"); //ajoute un
 
 
 require_once ("metaboxes/sponso.php");
+require_once ("options/agence.php");
 SponsoMetaBox::register();
+AgenceMenuPage::register();
+
 
 
