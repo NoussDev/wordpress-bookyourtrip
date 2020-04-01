@@ -109,5 +109,50 @@ require_once ("options/agence.php");
 SponsoMetaBox::register();
 AgenceMenuPage::register();
 
+add_filter("manage_hotel_posts_columns", function($columns){ //je récupère les colonnes du tableau Hôtel
+    return[
+        "cb" => $columns['cb'],
+        "thumbnail" => "Miniature", //j'ajoute une colonne miniature
+        "title" => $columns["title"],
+        "date" => $columns['date']
+    ];
+});
+
+add_filter("manage_hotel_posts_custom_column", function($columns, $postId){ //j'
+    //debug : var_dump(func_get_args())
+    if($columns === "thumbnail"){
+        the_post_thumbnail("thumbnail", $postId); //j'affiche l'image de mon hôtel
+    }
+}, 10 , 2);
 
 
+add_filter("manage_post_posts_columns", function($columns){
+    $newColumns = [];
+    foreach($columns as $k => $v){
+        if($k === "date"){
+            $newColumns['sponso']="Article sponsorisé ?"; //je place le sponso juste avant la date
+        }
+        $newColumns[$k] = $v;
+    }
+    return $newColumns;
+ });
+ 
+ add_filter("manage_post_posts_custom_column", function($column, $postId){
+         if($column === "sponso"){
+             if(!empty(get_post_meta($postId, SponsoMetaBox::META_KEY, true))){
+                 $class="yes";
+             }else{
+                 $class="no";
+             }
+             echo '<div class="bullet bullet-'. $class .'"></div>';
+         }
+ }, 10, 2);
+
+
+ add_action("admin_enqueue_scripts", function(){
+    wp_enqueue_style("admin_bookingyourtrip", get_template_directory_uri()."/assets/admin.css"); // je charge mon css
+});
+
+ 
+ 
+ 

@@ -1,0 +1,1 @@
+jQuery(".bookingyourtrip_datepicker").flatpickr({});
