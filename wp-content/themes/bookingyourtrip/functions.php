@@ -63,8 +63,40 @@ function bookingyourtrip_pagination(){
     echo '</nav>';
 }
 
+function bookingyourtrip_init(){
+    register_taxonomy("pays","post",[
+        "labels" => [
+            "name" => "Pays",
+            "singular_name" => "Pays",
+            "plural_name" => "Pays",
+            "search_items" => "Rechercher des Pays",
+            "all_items" => "Tous les pays",
+            "edit_item" => "Editer le pays",
+            "update_item" => "Mettre à jour le pays",
+            "add_new_item" => "Ajouter un nouveau pays",
+            "new_item_name" => "Ajouter un nouveau pays",
+            "menu_name" => "Pays"
+        ],
+        "show_in_rest" => true,
+        "hierarchical" => true,
+        "show_admin_column" => true
+    ]);
+
+    register_post_type("hotel",[
+        "label" => "Hôtel",
+        "public" => true,
+        "menu_position" => 3,
+        'menu_icon'   => 'dashicons-building',
+        "show_in_rest" => true,
+        "supports" => ["title", "editor","thumbnail"],
+        "has_archive" => true
+    ]);
+
+}
+
 
 //mes actions
+add_action("init", 'bookingyourtrip_init'); //initialisation pas obligatoire => utilisé pour taxonomie, il doit etre inclus avant init
 add_action('after_setup_theme','bookingyourtrip_support'); //titre à la page
 add_action('wp_enqueue_scripts','bookingyourtrip_register_assets'); //génère mon css et js
 add_filter("document_title_separator", "bookingyourtrip_title_separator"); //le filtre me permet de changer le title séparator en ma fonction (qui retourn |)
