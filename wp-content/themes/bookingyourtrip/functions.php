@@ -109,6 +109,12 @@ require_once ("options/agence.php");
 SponsoMetaBox::register();
 AgenceMenuPage::register();
 
+
+
+/*----------------------------------------------------------
+        affichage dans mon back office des colonnes
+----------------------------------------------------------*/
+
 add_filter("manage_hotel_posts_columns", function($columns){ //je récupère les colonnes du tableau Hôtel
     return[
         "cb" => $columns['cb'],
@@ -150,9 +156,54 @@ add_filter("manage_post_posts_columns", function($columns){
 
 
  add_action("admin_enqueue_scripts", function(){
-    wp_enqueue_style("admin_bookingyourtrip", get_template_directory_uri()."/assets/admin.css"); // je charge mon css
+    wp_enqueue_style("admin_bookingyourtrip", get_template_directory_uri()."/assets/admin.css"); // je charge mon css perso
 });
 
- 
+
+
+/*----------------------------------------------------------
+                    gérer la recherche sponso
+----------------------------------------------------------*/
+
+function bookingyourtrip_pre_get_posts(WP_Query $query){
+    if(is_admin() || !is_search() || !$query->is_main_query()){ //n'affiche rien si la requete est sur : page admin, seulement pour la recherche ou si ce n'est pas la requete principal 
+        return;
+    }
+
+    if(get_query_var("sponso") === "1"){ //si j'ai une query === sponso
+        $meta_query = $query->get("meta_query", []);
+        $meta_query[] = [
+            "key" => SponsoMetaBox::META_KEY,
+            "compare" => "EXISTS"
+        ];
+        $query->set("meta_query", $meta_query);
+    }
+}
+
+function bookingyourtrip_query_vars($params){ // wordpress ne connait pas notre varialbe get sponso, on lui ajoute
+    $params[]= "sponso";
+    return $params;
+}
+
+add_action("pre_get_posts","bookingyourtrip_pre_get_posts");
+add_filter("query_vars", "bookingyourtrip_query_vars");
+
+
+/*----------------------------------------------------------
+                affichage de la sideBar
+----------------------------------------------------------*/
+
+function bookingyourtrip_register_widget(){
+    register_sidebar([ //j'ajoute une nouvelle sidebar
+        "id" => "homepage",
+        "name" => "Sidebar Accueil",
+        "before_widget" => '<div class="p-4 %2$s" id="%1$s">', //mise en page bootstrap de la sidebar. Injecte le code du widget ex : %1$s = search-3 et %2$s = widget_search 
+        "after_widget" => '</div>',
+        "before_title" => '<h4 class="font-italic">',
+        "after_title" => '</h4>',
+    ]);
+}
+
+add_action("widgets_init", "bookingyourtrip_register_widget"); //création de l'onglet widget dans "Apparence"
  
  

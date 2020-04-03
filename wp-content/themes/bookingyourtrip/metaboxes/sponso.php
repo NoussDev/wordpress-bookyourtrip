@@ -21,8 +21,8 @@ class SponsoMetaBox{
         $value = get_post_meta($post->ID, self::META_KEY, true);
         wp_nonce_field(self::NONCE, self::NONCE);
         ?>
-            <input type="hidden" value="0" name="<?php self::META_KEY ?>">
-            <input type="checkbox" value="1" name="<?php self::META_KEY ?>" <?= checked($value,"1") ?>>
+            <input type="hidden" value="0" name="<?= self::META_KEY ?>">
+            <input type="checkbox" value="1" name="<?= self::META_KEY ?>" <?= checked($value,"1") ?>>
             <label for="bytsponso">Cet article est sponsorisé ?</label>
         <?php
     }
@@ -30,8 +30,8 @@ class SponsoMetaBox{
     public static function save($post_id){
         if(
             array_key_exists(self::META_KEY, $_POST) && 
-            current_user_can("publish_posts", $post_id && 
-            wp_verify_nonce($_POST[self::NONCE],self::NONCE))
+            current_user_can("publish_posts", $post_id) && 
+            wp_verify_nonce($_POST[self::NONCE],self::NONCE)
             ){ // variable existe et l'utilisateur à le droit de publier des articles ? + token csrf
             if($_POST['byt_sponso'] === "0"){
                 delete_post_meta($post_id, self::META_KEY);
